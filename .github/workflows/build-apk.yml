@@ -26,21 +26,27 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Prepare web files
+      - name: Prepare web files and app icons
         run: |
-          mkdir -p www/assets www/lib
+          mkdir -p www/assets www/lib assets
           cp index.html www/index.html
           cp native-shim.js www/native-shim.js
           cp NotoSansGujarati-Regular.ttf www/assets/
           cp NotoSansGujarati-Bold.ttf www/assets/
           sed -i 's#../assets/NotoSansGujarati-#assets/NotoSansGujarati-#g' www/index.html
 
-      - name: Install Capacitor
+          cp icon.png assets/icon.png
+          cp icon-foreground.png assets/icon-foreground.png
+          cp icon-background.png assets/icon-background.png
+          cp icon-only.png assets/icon-only.png
+
+      - name: Install Capacitor and plugins
         run: |
           npm init -y
           npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
           npm install @capacitor/filesystem@6 @capacitor/share@6 @capacitor/app@6
           npm install html2canvas@1.4.1 jspdf@2.5.1 esbuild
+          npm install --save-dev @capacitor/assets@3
 
       - name: Prepare native plugins
         run: |
@@ -54,6 +60,7 @@ jobs:
       - name: Configure Android
         run: |
           npx cap add android
+          npx capacitor-assets generate --android
           npx cap sync android
 
       - name: Build Debug APK
